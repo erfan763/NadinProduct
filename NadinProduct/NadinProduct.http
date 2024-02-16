@@ -1,0 +1,6 @@
+@NadinProduct_HostAddress = http://localhost:5038
+
+GET {{NadinProduct_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
