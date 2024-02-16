@@ -13,7 +13,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         _appDbContext = appDbContext;
     }
 
-    public async Task<Product> GetProductById(int productId)
+    public async Task<Product> GetProductById(string productId)
     {
         return _appDbContext.Products.FirstOrDefault(x => x.Id == productId);
     }

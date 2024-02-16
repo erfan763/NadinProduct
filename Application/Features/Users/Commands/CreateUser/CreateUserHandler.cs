@@ -17,12 +17,13 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
     private readonly IUserRepository _userRepository;
 
     public CreateUserHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IMapper mapper,
-        JWTService jwtService)
+        JWTService jwtService, UserManager<User> userManager)
     {
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
         _mapper = mapper;
         _jwtService = jwtService;
+        _userManager = userManager;
     }
 
     public async Task<CreateUserResponse> Handle(CreateUserRequest request, CancellationToken cancellationToken)
@@ -32,7 +33,9 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
             LastName = request.LastName,
             Email = request.Email,
             FirstName = request.FirstName,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            UserName = request.UserName,
+            CreatedDate = new DateTime()
         };
         var result = await _userManager.CreateAsync(newUser, request.Password);
 
@@ -41,9 +44,14 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
             var token = _jwtService.GenrateJWTToken(newUser.Id, newUser.UserName);
             newUser.Token = token;
         }
+        else
+        {
+            throw new BadRequestException(result.Errors.First().Description);
+        }
 
-        var user = _mapper.Map<User>(result);
-        await _userRepository.CreateUser(user);
+
+        var user = _mapper.Map<User>(newUser);
+        await _userRepository.CreateUser(newUser);
         await _unitOfWork.Save(cancellationToken);
 
         return _mapper.Map<CreateUserResponse>(user);

@@ -9,7 +9,7 @@ public sealed class CreateUserMapper : Profile
 {
     public CreateUserMapper()
     {
-        CreateMap<CreateUserRequest, User>();
-        CreateMap<User, CreateUserRequest>();
+        CreateMap<CreateUserResponse, User>();
+        CreateMap<User, CreateUserResponse>();
     }
 }

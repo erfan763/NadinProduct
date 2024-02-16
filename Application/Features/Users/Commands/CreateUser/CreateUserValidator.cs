@@ -26,5 +26,9 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
             .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
             .Matches("[0-9]").WithMessage("Password must contain at least one numeric digit.")
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty().WithMessage("Phone number is required.")
+            .Matches("^[0-9]*$").WithMessage("Phone number should contain only numeric digits.")
+            .Length(11).WithMessage("Phone number should be 11 digits in length.");
     }
 }

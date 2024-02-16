@@ -4,5 +4,5 @@ namespace Application.Repository;
 
 public interface IProductRepository
 {
-    Task<Product> GetProductById(int productId);
+    Task<Product> GetProductById(string productId);
 }
