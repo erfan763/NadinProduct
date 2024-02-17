@@ -34,8 +34,7 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
             Email = request.Email,
             FirstName = request.FirstName,
             PhoneNumber = request.PhoneNumber,
-            UserName = request.UserName,
-            CreatedDate = new DateTime()
+            UserName = request.UserName
         };
         var result = await _userManager.CreateAsync(newUser, request.Password);
 

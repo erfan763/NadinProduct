@@ -8,7 +8,7 @@ public interface IEntity : ITimeModification
 
 public interface ITimeModification
 {
-    public DateTime CreatedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
 
