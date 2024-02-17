@@ -1,5 +1,8 @@
-﻿using Application.Features.Users.Commands.CreateUser;
+﻿using System.Security.Claims;
+using Application.Features.Users.Commands.CreateUser;
+using Application.Features.Users.Queries.Users;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NadinProduct.Controllers;
@@ -20,6 +23,16 @@ public class UserController : ControllerBase
         CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
+
+    [HttpGet("getUser")]
+    [Authorize]
+    public async Task<ActionResult<GetUserResponse>> GetUser(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var response = await _mediator.Send(new GetUserRequest(userId), cancellationToken);
         return Ok(response);
     }
 }

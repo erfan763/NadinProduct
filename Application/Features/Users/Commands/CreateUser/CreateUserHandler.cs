@@ -51,9 +51,7 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
 
 
         var user = _mapper.Map<User>(newUser);
-        await _userRepository.CreateUser(newUser);
         await _unitOfWork.Save(cancellationToken);
-
         return _mapper.Map<CreateUserResponse>(user);
     }
 }

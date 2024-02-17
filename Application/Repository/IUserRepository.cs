@@ -4,7 +4,5 @@ namespace Application.Repository;
 
 public interface IUserRepository
 {
-    Task<User> GetUserById(int userId);
-
-    Task<User> CreateUser(User user);
+    Task<User> GetUserById(string userId);
 }

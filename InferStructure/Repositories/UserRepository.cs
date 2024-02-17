@@ -13,16 +13,9 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         _appDbContext = appDbContext;
     }
 
-    public async Task<User> GetUserById(int userId)
+    public async Task<User> GetUserById(string userId)
     {
-        return await _appDbContext.Users.FindAsync(userId);
-    }
-
-    public async Task<User> CreateUser(User user)
-    {
-        var addedUser = await _appDbContext.Users.AddAsync(user);
-        await _appDbContext.SaveChangesAsync();
-
-        return addedUser.Entity;
+        var user = _appDbContext.Users.FirstOrDefault(x => x.Id == userId);
+        return user;
     }
 }

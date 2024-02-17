@@ -1,8 +1,15 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
+using Application.Common;
+using Domin.Entities.User;
+using InferStructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace InferStructure.Extentions;
 
@@ -11,7 +18,43 @@ public static class JWTService
     public static void ConfigureJWTServices(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
+        var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]);
+
+
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+        services.AddScoped<AppSignInManager>();
+
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+            // Add the security definition for JWT
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme.",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer"
+            });
+
+            // Add the security requirement for Swagger
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
+
 
         services.AddAuthentication(options =>
             {
@@ -22,12 +65,68 @@ public static class JWTService
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
+                options.Authority = "https://localhost:7054/";
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ClockSkew = TimeSpan.Zero, // default: 5 min
+                    RequireSignedTokens = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    RequireExpirationTime = false,
+                    ValidateLifetime = true,
+                    ValidateAudience = false, //default : false
+                    ValidAudience = jwtSettings["Audience"],
+                    ValidateIssuer = false, //default : false
+                    ValidIssuer = jwtSettings["Issuer"]
+                };
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context => { return Task.CompletedTask; },
+                    OnTokenValidated = async context =>
+                    {
+                        var signInManager = context.HttpContext.RequestServices.GetRequiredService<AppSignInManager>();
+
+                        var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+                        if (claimsIdentity.Claims?.Any() != true)
+                            context.Fail("This token has no claims.");
+                    },
+                    OnChallenge = async context =>
+                    {
+                        if (context.AuthenticateFailure is SecurityTokenExpiredException)
+                        {
+                            context.HandleResponse();
+
+                            var response = new BadRequestException("Token is expired. refresh your token");
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            await context.Response.WriteAsJsonAsync(response);
+                        }
+
+                        else if (context.AuthenticateFailure != null)
+                        {
+                            context.HandleResponse();
+
+                            var response = new BadRequestException("Token is Not Valid");
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            await context.Response.WriteAsJsonAsync(response);
+                        }
+
+                        else
+                        {
+                            context.HandleResponse();
+
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            await context.Response.WriteAsJsonAsync(
+                                new BadRequestException("Invalid access token. Please login"));
+                        }
+                    },
+                    OnForbidden = async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        await context.Response.WriteAsJsonAsync(
+                            new BadRequestException("Forbidden"));
+                    }
                 };
             });
     }
