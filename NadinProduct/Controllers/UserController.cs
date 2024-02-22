@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Application.Features.Users.Commands.CreateUser;
+using Application.Features.Users.Commands.Login;
 using Application.Features.Users.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,14 @@ public class UserController : ControllerBase
 
     [HttpPost("register")]
     public async Task<ActionResult<CreateUserResponse>> Create(CreateUserRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginResponse>> Login(LoginRequest request,
         CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(request, cancellationToken);

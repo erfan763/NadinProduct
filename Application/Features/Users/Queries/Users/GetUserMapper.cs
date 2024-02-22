@@ -7,7 +7,6 @@ public sealed class GetUserMapper : Profile
 {
     public GetUserMapper()
     {
-        //CreateMap<GetUserResponse, User>();
         CreateMap<User, GetUserResponse>();
     }
 }

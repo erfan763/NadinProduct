@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domin.Common.BaseEntity;
 
@@ -17,7 +18,9 @@ public interface ITimeModification
 
 public abstract class BaseEntity
 {
-    [Key] public string Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key]
+    public string Id { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

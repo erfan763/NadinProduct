@@ -90,6 +90,7 @@ public static class JWTService
 
                         var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
                         if (claimsIdentity.Claims?.Any() != true)
+
                             context.Fail("This token has no claims.");
                     },
                     OnChallenge = async context =>
@@ -97,19 +98,27 @@ public static class JWTService
                         if (context.AuthenticateFailure is SecurityTokenExpiredException)
                         {
                             context.HandleResponse();
-
-                            var response = new BadRequestException("Token is expired. refresh your token");
+                            var errorMessage = new
+                            {
+                                message = "Token is expired. refresh your token",
+                                statusCode = StatusCodes.Status401Unauthorized
+                            };
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            await context.Response.WriteAsJsonAsync(response);
+                            await context.Response.WriteAsJsonAsync(errorMessage);
                         }
 
                         else if (context.AuthenticateFailure != null)
                         {
                             context.HandleResponse();
 
-                            var response = new BadRequestException("Token is Not Valid");
+
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            await context.Response.WriteAsJsonAsync(response);
+                            var errorMessage = new
+                            {
+                                message = "Token is Not Valid",
+                                statusCode = StatusCodes.Status401Unauthorized
+                            };
+                            await context.Response.WriteAsJsonAsync(errorMessage);
                         }
 
                         else
@@ -117,15 +126,25 @@ public static class JWTService
                             context.HandleResponse();
 
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            var errorMessage = new
+                            {
+                                message = "Invalid access token. Please login",
+                                statusCode = StatusCodes.Status401Unauthorized
+                            };
                             await context.Response.WriteAsJsonAsync(
-                                new BadRequestException("Invalid access token. Please login"));
+                                errorMessage);
                         }
                     },
                     OnForbidden = async context =>
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        var errorMessage = new
+                        {
+                            message = "Forbidden",
+                            statusCode = StatusCodes.Status401Unauthorized
+                        };
                         await context.Response.WriteAsJsonAsync(
-                            new BadRequestException("Forbidden"));
+                            errorMessage);
                     }
                 };
             });
