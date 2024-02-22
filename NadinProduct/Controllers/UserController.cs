@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Application.Features.Users.Commands.CreateUser;
 using Application.Features.Users.Commands.Login;
+using Application.Features.Users.Commands.UpdateUser;
 using Application.Features.Users.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,20 @@ public class UserController : ControllerBase
     public async Task<ActionResult<CreateUserResponse>> Create(CreateUserRequest request,
         CancellationToken cancellationToken)
     {
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPut("update")]
+    [Authorize]
+    public async Task<ActionResult<UpdateUserResponse>> Update(UpdateUserRequestInput requestInput,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var request = new UpdateUserRequest(requestInput.FirstName, requestInput.LastName, requestInput.Email,
+            requestInput.PhoneNumber, requestInput.UserName, userId);
+
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);
     }
