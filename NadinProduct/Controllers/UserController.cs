@@ -30,13 +30,20 @@ public class UserController : ControllerBase
 
     [HttpPut("update")]
     [Authorize]
-    public async Task<ActionResult<UpdateUserResponse>> Update(UpdateUserRequestInput requestInput,
+    public async Task<ActionResult<UpdateUserResponse>> Update(UpdateUserRequest requestInput,
         CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var request = new UpdateUserRequest(requestInput.FirstName, requestInput.LastName, requestInput.Email,
-            requestInput.PhoneNumber, requestInput.UserName, userId);
+        var request = new UpdateUserRequest
+        {
+            FirstName = requestInput.FirstName,
+            LastName = requestInput.LastName,
+            Email = requestInput.Email,
+            PhoneNumber = requestInput.PhoneNumber,
+            UserName = requestInput.UserName,
+            UserId = userId
+        };
 
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);

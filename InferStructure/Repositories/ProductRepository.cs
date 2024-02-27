@@ -27,11 +27,15 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         product.ManufacturePhone = user.PhoneNumber;
 
         if (_appDbContext.Products.Any(x => x.Name == product.Name))
-        {
             throw new BadRequestException("product with this name already exist");
-        }
 
         _appDbContext.Products.Add(product);
         return product;
+    }
+
+    public async Task<List<Product>> GetAllProducts()
+    {
+        var products = _appDbContext.Products.ToList();
+        return products;
     }
 }

@@ -19,11 +19,16 @@ public class ProductController : ControllerBase
 
     [HttpPost("createProduct")]
     [Authorize]
-    public async Task<ActionResult<CreateProductResponse>> Create(CreateProductRequestInputs requestInputs,
+    public async Task<ActionResult<CreateProductResponse>> Create(CreateProductRequest requestInputs,
         CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var request = new CreateProductRequest(userId, requestInputs.ProductName, requestInputs.Description);
+        var request = new CreateProductRequest
+        {
+            userId = userId,
+            Description = requestInputs.Description,
+            ProductName = requestInputs.ProductName
+        };
 
 
         var response = await _mediator.Send(request, cancellationToken);
