@@ -42,7 +42,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
                 "you can not change this product because this product did not created by you");
         var user = _appDbContext.Users.FirstOrDefault(x => x.Id == product.userId);
         if (user is null) throw new BadRequestException("user not found");
-        if (_appDbContext.Products.Any(x => x.Name == product.Name))
+        if (_appDbContext.Products.Any(x => x.Name == product.Name && x.Id != product.Id))
             throw new BadRequestException("product with this name already exist");
         exitsProduct.Description = product.Description;
         exitsProduct.IsAvailable = product.IsAvailable;
