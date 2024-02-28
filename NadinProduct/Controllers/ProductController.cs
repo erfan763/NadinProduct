@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
     }
 
 
-    [HttpPost("createProduct/{productId}")]
+    [HttpPut("updateProduct/{productId}")]
     [Authorize]
     public async Task<ActionResult<UpdateProductResponse>> Update(string productId, UpdateProductRequest request,
         CancellationToken cancellationToken)
