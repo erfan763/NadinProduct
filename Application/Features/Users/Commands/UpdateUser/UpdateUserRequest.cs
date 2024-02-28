@@ -3,12 +3,8 @@ using MediatR;
 
 namespace Application.Features.Users.Commands.UpdateUser;
 
-public sealed record UpdateUserRequest : IRequest<UpdateUserResponse>
+public sealed record UpdateUserRequest(string Email, string FirstName, string LastName, string PhoneNumber,
+    string UserName) : IRequest<UpdateUserResponse>
 {
-    public string Email;
-    public string FirstName;
-    public string LastName;
-    public string PhoneNumber;
     [JsonIgnore] public string UserId;
-    public string UserName;
 }

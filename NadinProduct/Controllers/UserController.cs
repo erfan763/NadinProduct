@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Features.Users.Commands.CreateUser;
 using Application.Features.Users.Commands.Login;
 using Application.Features.Users.Commands.UpdateUser;
@@ -30,21 +32,11 @@ public class UserController : ControllerBase
 
     [HttpPut("update")]
     [Authorize]
-    public async Task<ActionResult<UpdateUserResponse>> Update(UpdateUserRequest requestInput,
+    public async Task<ActionResult<UpdateUserResponse>> Update(UpdateUserRequest request,
         CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        var request = new UpdateUserRequest
-        {
-            FirstName = requestInput.FirstName,
-            LastName = requestInput.LastName,
-            Email = requestInput.Email,
-            PhoneNumber = requestInput.PhoneNumber,
-            UserName = requestInput.UserName,
-            UserId = userId
-        };
-
+        request.UserId = userId;
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);
     }

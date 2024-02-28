@@ -33,6 +33,26 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
         return product;
     }
 
+    public async Task<Product> UpdateProduct(Product product)
+    {
+        var exitsProduct = _appDbContext.Products.FirstOrDefault(x => x.Id == product.Id);
+        if (exitsProduct is null) throw new NotFoundException("product with this id not found");
+        if (exitsProduct.userId != product.userId)
+            throw new BadRequestException(
+                "you can not change this product because this product did not created by you");
+        var user = _appDbContext.Users.FirstOrDefault(x => x.Id == product.userId);
+        if (user is null) throw new BadRequestException("user not found");
+        if (_appDbContext.Products.Any(x => x.Name == product.Name))
+            throw new BadRequestException("product with this name already exist");
+        exitsProduct.Description = product.Description;
+        exitsProduct.IsAvailable = product.IsAvailable;
+        exitsProduct.Name = product.Name;
+
+
+        _appDbContext.Products.Update(exitsProduct);
+        return exitsProduct;
+    }
+
     public async Task<List<Product>> GetAllProducts()
     {
         var products = _appDbContext.Products.ToList();

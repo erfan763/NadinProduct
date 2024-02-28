@@ -8,7 +8,6 @@ namespace Application.Features.Users.Queries.Users;
 public sealed class GetUserHandler : IRequestHandler<GetUserRequest, GetUserResponse>
 {
     private readonly IMapper _mapper;
-
     private readonly IUserRepository _userRepository;
 
 

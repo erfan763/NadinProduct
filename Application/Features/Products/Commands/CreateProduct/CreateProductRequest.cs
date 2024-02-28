@@ -3,9 +3,7 @@ using MediatR;
 
 namespace Application.Features.Products.Commands.CreateProduct;
 
-public sealed record CreateProductRequest : IRequest<CreateProductResponse>
+public sealed record CreateProductRequest(string Description, string ProductName) : IRequest<CreateProductResponse>
 {
-    public string Description;
-    public string ProductName;
     [JsonIgnore] public string userId;
 }

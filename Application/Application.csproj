@@ -22,8 +22,4 @@
     <ProjectReference Include="..\Domin\Domin.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Products\Queries\GetAllProducts\" />
-  </ItemGroup>
-
 </Project>

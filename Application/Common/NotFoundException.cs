@@ -1,4 +1,6 @@
-﻿namespace Application.Common;
+﻿using System;
+
+namespace Application.Common;
 
 public class NotFoundException : Exception
 {
