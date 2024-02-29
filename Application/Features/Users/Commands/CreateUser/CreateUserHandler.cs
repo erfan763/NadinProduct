@@ -12,15 +12,12 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
     private readonly JWTService _jwtService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
     private readonly UserManager<User> _userManager;
-    private readonly IUserRepository _userRepository;
 
-    public CreateUserHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IMapper mapper,
+    public CreateUserHandler(IUnitOfWork unitOfWork, IMapper mapper,
         JWTService jwtService, UserManager<User> userManager)
     {
         _unitOfWork = unitOfWork;
-        _userRepository = userRepository;
         _mapper = mapper;
         _jwtService = jwtService;
         _userManager = userManager;
@@ -34,7 +31,8 @@ public sealed class CreateUserHandler : IRequestHandler<CreateUserRequest, Creat
             Email = request.Email,
             FirstName = request.FirstName,
             PhoneNumber = request.PhoneNumber,
-            UserName = request.UserName
+            UserName = request.UserName,
+            RefreshToken = _jwtService.GenerateRefreshToken()
         };
         var result = await _userManager.CreateAsync(newUser, request.Password);
 

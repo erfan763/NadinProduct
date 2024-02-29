@@ -26,6 +26,7 @@ public static class ErrorHandlerExtensions
                     BadRequestException => (int)HttpStatusCode.BadRequest,
                     OperationCanceledException => (int)HttpStatusCode.ServiceUnavailable,
                     NotFoundException => (int)HttpStatusCode.NotFound,
+                    UnauthorizedException => (int)HttpStatusCode.Unauthorized,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

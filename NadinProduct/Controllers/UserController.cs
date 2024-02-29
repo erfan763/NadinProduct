@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Features.Users.Commands.CreateUser;
 using Application.Features.Users.Commands.Login;
+using Application.Features.Users.Commands.RefreshToken;
 using Application.Features.Users.Commands.UpdateUser;
 using Application.Features.Users.Queries.Users;
 using MediatR;
@@ -26,6 +27,16 @@ public class UserController : ControllerBase
     public async Task<ActionResult<CreateUserResponse>> Create(CreateUserRequest request,
         CancellationToken cancellationToken)
     {
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("refreshToken")]
+    public async Task<ActionResult<RefreshTokenResponse>> RefreshToken(RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        request.userId = userId;
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);
     }
