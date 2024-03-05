@@ -8,6 +8,8 @@ public interface IProductRepository
 
     Task<List<Product>> GetAllProducts();
 
+    Task<List<Product>> GetFilteredProductByUser(string userName);
+
     Task<Product> AddProduct(Product product);
 
     Task<Product> UpdateProduct(Product product);

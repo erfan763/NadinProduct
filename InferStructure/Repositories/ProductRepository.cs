@@ -2,6 +2,7 @@
 using Application.Repository;
 using Domin.Entities.Product;
 using InferStructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace InferStructure.Repositories;
 
@@ -56,6 +57,13 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     public async Task<List<Product>> GetAllProducts()
     {
         var products = _appDbContext.Products.ToList();
+        return products;
+    }
+
+
+    public async Task<List<Product>> GetFilteredProductByUser(string userName)
+    {
+        var products = _appDbContext.Products.AsNoTracking().Where(x => x.User.UserName == userName).ToList();
         return products;
     }
 }

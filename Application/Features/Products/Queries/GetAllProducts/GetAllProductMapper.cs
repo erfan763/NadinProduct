@@ -7,7 +7,8 @@ public sealed class GetAllProductMapper : Profile
 {
     public GetAllProductMapper()
     {
-        CreateMap<List<Product>, GetAllProductResponse>()
+        CreateMap<Product, ProductDto>();
+        CreateMap<List<ProductDto>, GetAllProductResponse>()
             .ForMember(dest => dest.Products, act => act.MapFrom(src => src));
     }
 }
