@@ -7,4 +7,6 @@ public interface IUserRepository
     Task<User> GetUserById(string userId);
 
     Task<User> GetUserByUserName(string userName);
+
+    Task<List<User>> GetUsers();
 }

@@ -2,9 +2,6 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Application.Repository;
-using Azure.Core;
-using Domin.Entities.User;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,7 +30,6 @@ public class JWTService
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, userName)
             }),
-            NotBefore = DateTime.Now.AddMinutes(0),
             Expires = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -43,6 +39,7 @@ public class JWTService
 
         return tokenHandler.WriteToken(token);
     }
+
     public string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];

@@ -2,6 +2,6 @@
 
 namespace Application.Features.Products.Queries.GetAllProducts;
 
-public sealed record GetAllProductRequest : IRequest<GetAllProductResponse>
+public sealed record GetAllProductRequest(string creatorUserName) : IRequest<GetAllProductResponse>
 {
 }

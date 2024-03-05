@@ -24,4 +24,10 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         var user = _appDbContext.Users.FirstOrDefault(x => x.UserName == userName);
         return user;
     }
+
+    public async Task<List<User>> GetUsers()
+    {
+        var users = _appDbContext.Users.ToList();
+        return users;
+    }
 }

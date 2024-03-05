@@ -46,9 +46,10 @@ public class ProductController : ControllerBase
 
 
     [HttpGet("getAllProduct")]
-    public async Task<ActionResult<GetAllProductResponse>> GetAllProduct(CancellationToken cancellationToken)
+    public async Task<ActionResult<GetAllProductResponse>> GetAllProduct([FromQuery] string creatorUserName,
+        CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new GetAllProductRequest(), cancellationToken);
+        var response = await _mediator.Send(new GetAllProductRequest(creatorUserName), cancellationToken);
         return Ok(response);
     }
 
